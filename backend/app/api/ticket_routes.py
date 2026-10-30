@@ -80,8 +80,8 @@ def create_ticket(
     db.commit()
     db.refresh(ticket)
 
-    # Trigger critical notification if severity is critical
-    if ticket.severity.lower() == "critical":
+    # Trigger notification if severity is high or critical
+    if ticket.severity.lower() in ("critical", "high"):
         notifier.send_critical_alert_background(ticket)
 
     return ticket
@@ -117,9 +117,48 @@ def update_ticket_severity(
     db.commit()
     db.refresh(ticket)
 
-    # Trigger if updated to critical from non-critical
-    if new_severity == "critical" and old_severity != "critical":
+    # Trigger if updated to high or critical from lower severity
+    if new_severity in ("critical", "high") and old_severity not in ("critical", "high"):
         notifier.send_critical_alert_background(ticket)
+
+    return ticket
+
+
+@router.post("/simulate", response_model=TicketOut)
+def simulate_new_threat_ticket(
+    db: Session = Depends(get_db),
+    _: User = Depends(require_any_user),
+) -> Ticket:
+    """
+    Simulates a new incoming HIGH or CRITICAL security threat incident,
+    records it in SQLite, and automatically dispatches an alert email to configured analysts.
+    """
+    import random
+    from datetime import datetime, timezone
+    from app.services.ticket_service import _TITLES, _DESCRIPTIONS, _THREAT_TYPES, _IPS, _HOSTS
+
+    threat_idx = random.randint(0, len(_TITLES) - 1)
+    severity = random.choice(["HIGH", "CRITICAL"])
+    threat_type = _THREAT_TYPES[threat_idx % len(_THREAT_TYPES)]
+    ticket_id = f"TKT-{uuid.uuid4().hex[:10].upper()}"
+
+    ticket = Ticket(
+        id=ticket_id,
+        title=_TITLES[threat_idx],
+        threat_type=threat_type,
+        severity=severity.lower(),
+        status=None,
+        source_ip=random.choice(_IPS),
+        target_host=random.choice(_HOSTS),
+        description=_DESCRIPTIONS[threat_idx],
+        created_at=datetime.now(timezone.utc),
+    )
+    db.add(ticket)
+    db.commit()
+    db.refresh(ticket)
+
+    # Automatically trigger background email notification (force=True ensures immediate delivery without cooldown suppression)
+    notifier.send_critical_alert_background(ticket, force=True)
 
     return ticket
 

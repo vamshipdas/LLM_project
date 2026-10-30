@@ -728,6 +728,7 @@ class AlertNotifier:
         alert_item: Union[Dict[str, Any], Ticket, DBFinding],
         db: Optional[Session] = None,
         is_test: bool = False,
+        force: bool = False,
     ) -> Dict[str, Any]:
         """
         High-level dispatcher for critical alerts.
@@ -760,12 +761,12 @@ class AlertNotifier:
                 return {"status": "skipped", "reason": "below_min_severity"}
 
             # Deduplication check: do not resend for same alert id
-            if not is_test and alert_id in self._sent_alert_ids:
+            if not is_test and not force and alert_id in self._sent_alert_ids:
                 logger.info(f"Alert {alert_id} was already sent in this session. Skipping duplicate.")
                 return {"status": "skipped", "reason": "duplicate_alert_id"}
 
             # Also check DB for previously successful send of this alert
-            if not is_test:
+            if not is_test and not force:
                 prev_sent = (
                     db.query(NotificationLog)
                     .filter(NotificationLog.alert_id == alert_id, NotificationLog.status == "sent")
@@ -794,7 +795,7 @@ class AlertNotifier:
                 return {"status": "failed", "reason": err_msg}
 
             # 4. Global Rate Limit Check (max 10 emails/hour)
-            if not is_test and self._is_rate_limited():
+            if not is_test and not force and self._is_rate_limited():
                 warn_msg = f"Global rate limit of {self.MAX_EMAILS_PER_HOUR} emails/hour exceeded."
                 logger.warning(warn_msg)
                 self._log_attempt(
@@ -812,7 +813,7 @@ class AlertNotifier:
             # 5. Cooldown & Grouping check
             group_key = self._get_group_key(alert_dict)
             grouped_count = 1
-            if not is_test:
+            if not is_test and not force:
                 in_cooldown, grouped_count = self._check_cooldown_and_group(
                     group_key=group_key,
                     alert_item=alert_dict,
@@ -886,6 +887,7 @@ class AlertNotifier:
         self,
         alert_item: Union[Dict[str, Any], Ticket, DBFinding],
         db: Optional[Session] = None,
+        force: bool = False,
     ):
         """
         Schedules `send_critical_alert` to execute in the background so it never
@@ -894,13 +896,13 @@ class AlertNotifier:
         try:
             loop = asyncio.get_running_loop()
             # If inside an asyncio event loop, run in a worker thread
-            loop.run_in_executor(None, self.send_critical_alert, alert_item, None, False)
+            loop.run_in_executor(None, self.send_critical_alert, alert_item, None, False, force)
         except RuntimeError:
             # Fallback if no running asyncio loop
             import threading
             threading.Thread(
                 target=self.send_critical_alert,
-                args=(alert_item, None, False),
+                args=(alert_item, None, False, force),
                 daemon=True,
             ).start()
 

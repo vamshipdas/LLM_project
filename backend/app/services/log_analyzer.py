@@ -361,12 +361,12 @@ class LogAnalyzer:
                 ticket_id = self._ensure_ticket(db, fnd)
                 fnd["ticket_id"] = ticket_id
 
-            if severity == "critical":
+            if severity in ("critical", "high"):
                 try:
                     from app.services.notifier import notifier
                     notifier.send_critical_alert_background(fnd)
                 except Exception as ex:
-                    print(f"[WARN] Failed to dispatch critical alert notification for finding {fnd.get('id')}: {ex}")
+                    print(f"[WARN] Failed to dispatch alert notification for finding {fnd.get('id')}: {ex}")
 
             enriched_findings.append(fnd)
 

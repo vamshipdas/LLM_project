@@ -182,6 +182,12 @@ export function updateTicketStatus(ticketId, status) {
   });
 }
 
+export function simulateTicket() {
+  return request("/tickets/simulate", {
+    method: "POST",
+  });
+}
+
 /* --- SOPs --- */
 export function listSOPs() {
   return request("/sops");

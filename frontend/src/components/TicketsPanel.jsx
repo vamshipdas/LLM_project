@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
   AlertCircle, Bug, CheckCircle2, CircleDot, Cpu, Download, Flame,
-  GripVertical, MessageSquare, MoreHorizontal, RotateCcw, ShieldAlert,
+  GripVertical, MessageSquare, MoreHorizontal, RotateCcw, ShieldAlert, Zap,
 } from 'lucide-react';
-import { listTickets, updateTicketStatus } from '../api';
+import { listTickets, updateTicketStatus, simulateTicket } from '../api';
 import ThreatOriginGlobe from './ThreatMap/ThreatOriginGlobe';
 import AlertEmailIndicator from './AlertEmailIndicator';
 
@@ -50,6 +50,20 @@ export default function TicketsPanel({ onUseTicket, onSelectAlert, showToast }) 
   const [updatingId, setUpdatingId] = useState(null);
   const [filter, setFilter] = useState('unresolved');
   const [selectedTicketId, setSelectedTicketId] = useState(null);
+  const [isSimulating, setIsSimulating] = useState(false);
+
+  const handleSimulateThreat = async () => {
+    setIsSimulating(true);
+    try {
+      const newTicket = await simulateTicket();
+      setTickets((current) => [newTicket, ...current]);
+      showToast && showToast('success', `Live threat [${newTicket.id}] simulated! Auto-alert email dispatched.`);
+    } catch (error) {
+      showToast && showToast('error', `Failed to simulate threat: ${error.message}`);
+    } finally {
+      setIsSimulating(false);
+    }
+  };
 
   useEffect(() => {
     listTickets().then(setTickets).finally(() => setIsLoading(false));
@@ -91,10 +105,34 @@ export default function TicketsPanel({ onUseTicket, onSelectAlert, showToast }) 
     <aside className="tickets-panel">
       <div className="tickets-panel__header">
         <ShieldAlert size={18} color="#38bdf8" />
-        <div>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <strong>Incoming Tickets</strong>
           <span>{tickets.filter((ticket) => ticket.status !== 'resolved').length} active · drag into chat</span>
         </div>
+        <button
+          type="button"
+          className="button button--ghost"
+          style={{
+            padding: '4px 8px',
+            fontSize: '11px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            borderColor: '#0284c7',
+            background: 'rgba(2, 132, 199, 0.15)',
+            color: '#38bdf8',
+            borderRadius: '6px',
+            cursor: isSimulating ? 'not-allowed' : 'pointer',
+            whiteSpace: 'nowrap',
+            fontWeight: 600,
+          }}
+          onClick={handleSimulateThreat}
+          disabled={isSimulating}
+          title="Simulate incoming threat incident and auto-dispatch alert email"
+        >
+          <Zap size={12} color="#38bdf8" />
+          {isSimulating ? 'Sending…' : 'Simulate Threat'}
+        </button>
       </div>
 
       <div className="ticket-filters" aria-label="Filter tickets">
