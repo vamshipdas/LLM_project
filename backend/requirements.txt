@@ -1,0 +1,37 @@
+# --- Web framework ---
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
+
+# --- Configuration & schema ---
+pydantic>=2.7.0
+pydantic-settings>=2.3.0
+
+# --- Persistence (SQLAlchemy 2.x: PostgreSQL in prod, SQLite zero-config dev) ---
+sqlalchemy>=2.0.30
+psycopg[binary]>=3.2.0        # PostgreSQL driver, used when DATABASE_URL is postgresql+psycopg://
+
+# --- Authentication ---
+PyJWT>=2.8.0
+bcrypt>=4.1.0
+
+# --- RAG: embeddings, vector store, retrieval pipeline ---
+sentence-transformers>=3.0.0  # all-MiniLM-L6-v2 (pulls torch + transformers)
+faiss-cpu>=1.8.0
+numpy>=1.26.0
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-text-splitters>=0.3.0
+langchain-openai>=0.2.0       # ChatOpenAI: works for both OpenAI and NIM (OpenAI-compatible base_url)
+tiktoken>=0.7.0
+
+# --- Document & log parsing ---
+pypdf>=4.1.0
+python-docx>=1.1.0
+python-evtx>=0.8.1
+pyyaml>=6.0.1
+
+# --- Testing & Misc ---
+httpx>=0.27.0
+pytest>=8.0.0
+

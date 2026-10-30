@@ -1,0 +1,22 @@
+STANDARD OPERATING PROCEDURE: DATA EXFILTRATION & INSIDER THREAT RESPONSE
+Document ID: SOP-SEC-06 | Classification: Confidential | Version: 1.4
+
+1.0 Detection & Scoping
+- Validate the alert against NetFlow, proxy, and firewall logs: unusual egress volume, uploads to personal cloud storage, or oversized DNS TXT responses.
+- Identify the data classification of the egressed material and estimate the transfer volume and record count.
+- Determine whether the transfer originated from an authorised service account or an interactive insider session.
+
+2.0 Containment Protocol
+- Step 2.1: Block the destination domain or IP at the secure web gateway and revoke any active OAuth tokens for the destination application.
+- Step 2.2: Disable or restrict the implicated account and terminate active sessions across VPN, IdP, and cloud administration consoles.
+- Step 2.3: Quarantine the source endpoint and place a legal hold on the related mailboxes and cloud audit logs.
+
+3.0 Forensics & Eradication
+- Step 3.1: Acquire the endpoint disk image and memory capture for forensic review of staging and transfer tooling.
+- Step 3.2: Review DLP events, USB write activity, and browser upload history to establish the full scope of data accessed.
+- Step 3.3: Revoke exposed cryptographic keys, API tokens, and shared links tied to the exfiltrated dataset.
+
+4.0 Recovery & Notification
+- Rotate credentials and keys for all affected systems and enforce conditional access with device compliance checks.
+- Notify legal, compliance, and affected customers within the regulatory breach notification window.
+- Update DLP policy rules and egress traffic baselines, then submit findings to the incident response post-mortem.

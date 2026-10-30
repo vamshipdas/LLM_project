@@ -1,0 +1,23 @@
+STANDARD OPERATING PROCEDURE: RANSOMWARE & ADVANCED MALWARE CONTAINMENT
+Document ID: SOP-SEC-02 | Classification: Critical Priority | Version: 3.1
+
+1.0 Immediate Triage & Scoping
+- Identify initial patient-zero workstation or server from SIEM alerts (high-volume file renames, .locked extensions, shadow copy deletions via vssadmin).
+- Determine propagation vectors: SMB (Port 445 / EternalBlue), RDP (Port 3389), PsExec, or compromised service accounts.
+- Assess whether enterprise hypervisor or centralized backup repositories are threatened.
+
+2.0 Urgent Containment Protocol
+- Step 2.1: Immediately isolate host via EDR network containment. Do NOT power down or reboot the machine to preserve volatile RAM memory for forensic acquisition.
+- Step 2.2: Sever SMB/RPC interconnects at core switches between affected subnet and central file servers (port 445 / 139 / 135 block).
+- Step 2.3: Freeze administrative service accounts exhibiting anomalous lateral movement in Active Directory.
+- Step 2.4: Verify offline immutability of volume shadow backups and enterprise storage snapshots; disable cloud backup sync agents to prevent encrypted file sync.
+
+3.0 Eradication & Decryption Analysis
+- Step 3.1: Capture RAM dump with WinPmem / LiME for cryptographic key extraction before malware process termination.
+- Step 3.2: Identify ransomware binary hash and check against NoMoreRansom and MITRE ATT&CK databases.
+- Step 3.3: Terminate malicious parent and child processes; delete persistence artifacts, scheduled tasks, and rogue services.
+
+4.0 Clean Restoration & Validation
+- Re-image infected hosts from validated baseline golden images. Never attempt in-place repair for ransomware infections.
+- Restore files from known-good verified air-gapped snapshots prior to infection timestamp.
+- Perform continuous 72-hour endpoint telemetry monitoring post-restoration.

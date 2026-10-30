@@ -1,0 +1,31 @@
+# PostgreSQL service for the Smart Threat Response Assistant.
+#
+#   docker compose -f backend/docker-compose.yml up -d
+#
+# Then point the backend at it:
+#   DATABASE_URL=postgresql+psycopg://soc:soc@localhost:5432/soc_assistant
+#
+# The backend itself is run locally (uvicorn) so the embedding model and FAISS
+# index stay on the host; only the database is containerised here.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: soc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: soc
+      POSTGRES_PASSWORD: soc
+      POSTGRES_DB: soc_assistant
+    ports:
+      - "5432:5432"
+    volumes:
+      - soc_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U soc -d soc_assistant"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  soc_pgdata:

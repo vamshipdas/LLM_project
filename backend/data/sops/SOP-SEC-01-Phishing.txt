@@ -1,0 +1,24 @@
+STANDARD OPERATING PROCEDURE: PHISHING & SOCIAL ENGINEERING HANDLING
+Document ID: SOP-SEC-01 | Classification: Internal Operational | Version: 2.4
+
+1.0 Initial Identification & Triage
+- Extract full RFC 822 internet headers, recipient list, sending MTA IP, SPF/DKIM/DMARC authentication results.
+- Identify all Indicators of Compromise (IoCs): malicious URLs, embedded tracking pixels, attachment hashes (SHA-256).
+- If the email contains a credential harvesting hyperlink, query SIEM proxy/DNS telemetry to check for active clicks by internal users.
+
+2.0 Containment Protocol
+- Step 2.1: Submit sender domain and source IP to corporate perimeter firewall and mail gateway blocklists (block SMTP/TLS inbound).
+- Step 2.2: Purge the malicious email from all recipient inboxes using M365 Security & Compliance / Google Workspace Admin quarantine API.
+- Step 2.3: For any user who clicked the hyperlink or submitted credentials:
+    a) Force immediate active session revocation across all IdP tokens (Okta / Azure AD / PingFederate).
+    b) Reset active Active Directory / LDAP account passwords.
+    c) Enforce MFA re-enrollment and review registered MFA devices for rogue FIDO2/TOTP tokens.
+
+3.0 Eradication & Remediation
+- Step 3.1: Null-route malicious domains at corporate DNS Sinkhole resolvers (0.0.0.0).
+- Step 3.2: If attachment execution occurred, isolate affected endpoints from VLAN immediately via EDR host isolation.
+- Step 3.3: Run deep memory and persistence inspection (Registry Run keys, Scheduled Tasks, WMI event subscriptions).
+
+4.0 Recovery & Post-Incident Review
+- Confirm zero active persistence on endpoint before removing network quarantine.
+- Send targeted notification to affected users and submit IoC package to threat intelligence platform (MISP / OpenCTI).

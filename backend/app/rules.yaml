@@ -1,0 +1,137 @@
+# CyberLLM SOC Log Analysis Detection Rules
+# Configurable rules for the correlation and anomaly detection engine
+
+rules:
+  - id: "RULE-T1110"
+    name: "Brute Force Authentication"
+    category: "brute_force"
+    mitre_technique: "T1110"
+    severity: "high"
+    time_window_seconds: 60
+    threshold: 5
+    description: "Multiple failed authentication attempts detected from the same source within a short time window."
+    event_ids:
+      - "4625"
+      - "18456" # SQL Server failed login
+    keywords:
+      - "failed password"
+      - "authentication failure"
+      - "failed login"
+      - "invalid credentials"
+      - "logon failure"
+      - "invalid user"
+
+  - id: "RULE-T1078"
+    name: "Possible Account Compromise"
+    category: "account_compromise"
+    mitre_technique: "T1078"
+    severity: "critical"
+    time_window_seconds: 300
+    failure_threshold: 3
+    description: "Successful authentication detected immediately after multiple repeated failed logon attempts."
+    success_event_ids:
+      - "4624"
+    success_keywords:
+      - "accepted password"
+      - "session opened"
+      - "successful logon"
+      - "login successful"
+
+  - id: "RULE-T1543"
+    name: "Persistence Mechanism Installed"
+    category: "persistence"
+    mitre_technique: "T1543"
+    severity: "high"
+    description: "A new system service or scheduled task was created, indicating potential persistence installation."
+    event_ids:
+      - "7045" # Service installed
+      - "4698" # Scheduled task created
+    keywords:
+      - "service installed"
+      - "scheduled task created"
+      - "systemd service installed"
+      - "crontab -e"
+      - "crontab installed"
+
+  - id: "RULE-T1070"
+    name: "Security Audit Log Cleared"
+    category: "defense_evasion"
+    mitre_technique: "T1070"
+    severity: "high"
+    description: "Security or System event log was deliberately cleared, indicating anti-forensics or defense evasion."
+    event_ids:
+      - "1102" # Audit log cleared
+      - "104"  # System log cleared
+    keywords:
+      - "the audit log was cleared"
+      - "log was cleared"
+      - "eventlog cleared"
+      - "wevtutil cl"
+      - "clear-eventlog"
+
+  - id: "RULE-T1098"
+    name: "Privilege Escalation / Admin Account Creation"
+    category: "privilege_escalation"
+    mitre_technique: "T1098"
+    severity: "high"
+    description: "A user account was created or added to a privileged administrative group."
+    event_ids:
+      - "4720" # User created
+      - "4732" # Member added to security group
+      - "4728" # Member added to global security group
+    keywords:
+      - "user account created"
+      - "added to administrators"
+      - "usermod -ag sudo"
+      - "wheel"
+      - "sudoers"
+
+  - id: "RULE-T1204"
+    name: "Malware Detection Alert"
+    category: "malware"
+    mitre_technique: "T1204"
+    severity: "critical"
+    description: "Antivirus or Endpoint Protection triggered a malicious software detection event."
+    event_ids:
+      - "1116" # Defender malware detected
+      - "1117" # Defender action taken
+      - "1006" # Defender malware detected
+    keywords:
+      - "malware detected"
+      - "trojan"
+      - "ransomware"
+      - "virus detected"
+      - "quarantined"
+      - "threat detected"
+
+  - id: "RULE-T1059"
+    name: "Suspicious PowerShell Execution"
+    category: "suspicious_execution"
+    mitre_technique: "T1059.001"
+    severity: "high"
+    description: "Execution of PowerShell with encoded commands, hidden window, or network download cradles."
+    event_ids:
+      - "4104" # Script block logging
+    keywords:
+      - "-enc"
+      - "-encodedcommand"
+      - "downloadstring"
+      - "invoke-webrequest"
+      - "invoke-expression"
+      - "iex("
+      - "bypass -noninteractive"
+      - "windowstyle hidden"
+
+  - id: "RULE-T1046"
+    name: "Network Reconnaissance / Port Scan"
+    category: "reconnaissance"
+    mitre_technique: "T1046"
+    severity: "medium"
+    time_window_seconds: 60
+    threshold: 5
+    description: "Repeated connection refused or port scan activity detected from an external/internal host."
+    keywords:
+      - "connection refused"
+      - "port scan"
+      - "syn flood"
+      - "nmap scan"

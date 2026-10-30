@@ -1,0 +1,548 @@
+[
+  {
+    "title": "Credential Harvester Targeting Finance Group",
+    "threat_type": "phishing",
+    "severity": "HIGH",
+    "source_ip": "185.220.101.45",
+    "target_host": "ws-fin-09.corp.internal",
+    "target_user": "cfo_assistant@enterprise.com",
+    "indicators": [
+      "hxxps://sso-secure-portal.update-payroll-login.net",
+      "mail-from: urgent-payroll@acc0unt-update.net",
+      "SHA256: 4b227777d4da1fc910b80989f64e10e7b767d40228383a15"
+    ],
+    "raw_log": "Oct 05 11:32:01 mailgateway filter[4921]: SPF PASS, DKIM FAIL, link extraction flagged high entropy domain target ws-fin-09",
+    "description": "User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "id": "ALT-2717",
+    "timestamp": "2026-10-05T06:25:17.924399Z",
+    "status": "REJECTED",
+    "triage_result": {
+      "alert_id": "ALT-2717",
+      "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+      "assessed_severity": "HIGH",
+      "confidence": {
+        "level": "LOW",
+        "score": 0.42,
+        "rationale": "Low confidence: Weak SOP similarity. Manual analyst verification strongly recommended."
+      },
+      "recommended_actions": [
+        {
+          "step": 1,
+          "phase": "Containment",
+          "action": "Blacklist source IP 185.220.101.45 and block sender domain on perimeter mail gateway.",
+          "sop_reference": "SOP-SEC-01 \u00a72.1"
+        },
+        {
+          "step": 2,
+          "phase": "Containment",
+          "action": "Purge malicious message and revoke active IdP session tokens for targeted user 'cfo_assistant@enterprise.com'.",
+          "sop_reference": "SOP-SEC-01 \u00a72.2 & \u00a72.3"
+        },
+        {
+          "step": 3,
+          "phase": "Eradication",
+          "action": "Null-route malicious indicator domains in corporate DNS sinkhole and verify zero endpoint malware executions.",
+          "sop_reference": "SOP-SEC-01 \u00a73.1"
+        },
+        {
+          "step": 4,
+          "phase": "Recovery",
+          "action": "Enforce password reset and MFA re-enrollment for affected identity.",
+          "sop_reference": "SOP-SEC-01 \u00a74.0"
+        }
+      ],
+      "sop_citations": [
+        {
+          "sop_id": "SOP-SEC-01",
+          "sop_title": "Phishing & Social Engineering Incident Response Procedure",
+          "section": "1.0 Initial Identification & Triage",
+          "excerpt": "- Extract full RFC 822 internet headers, recipient list, sending MTA IP, SPF/DKIM/DMARC authentication results.\n- Identify all Indicators of Compromise (IoCs): malicious URLs, embedded tracking pixels, attachment hashes (SHA-256).\n- If the email contains a credential harvesting h...",
+          "similarity_score": 0.277
+        },
+        {
+          "sop_id": "SOP-SEC-04",
+          "sop_title": "Brute-Force & Credential Stuffing Mitigation Procedure",
+          "section": "4.0 Log Archival",
+          "excerpt": "- Export Netflow, firewall logs, and authentication failure logs into immutable tamper-proof audit storage with SHA-256 validation....",
+          "similarity_score": 0.127
+        },
+        {
+          "sop_id": "SOP-SEC-01",
+          "sop_title": "Phishing & Social Engineering Incident Response Procedure",
+          "section": "2.0 Containment Protocol",
+          "excerpt": "- Step 2.1: Submit sender domain and source IP to corporate perimeter firewall and mail gateway blocklists (block SMTP/TLS inbound).\n- Step 2.2: Purge the malicious email from all recipient inboxes using M365 Security & Compliance / Google Workspace Admin quarantine API.\n- Step 2...",
+          "similarity_score": 0.097
+        }
+      ],
+      "analyst_guidance": "Grounding verified against 3 SOP sections. The assistant strictly recommends following SOP-SEC-01. Analyst verification required before committing containment actions to network perimeter."
+    }
+  },
+  {
+    "title": "Anomalous File Encryption & Shadow Copy Deletion",
+    "threat_type": "ransomware",
+    "severity": "CRITICAL",
+    "source_ip": "10.4.18.99",
+    "target_host": "srv-file-archive01.prod.internal",
+    "target_user": "backup_svc",
+    "indicators": [
+      "Process: vssadmin.exe delete shadows /all /quiet",
+      "Extension: .cryptLock",
+      "Outbound Beacon: 91.240.118.17:443"
+    ],
+    "raw_log": "Oct 05 11:40:12 srv-file-archive01 Sysmon[1]: EventID 1: Image=C:\\Windows\\System32\\vssadmin.exe ParentImage=C:\\Users\\backup_svc\\AppData\\Local\\Temp\\update.exe CommandLine=vssadmin delete shadows /all /quiet",
+    "description": "EDR alert triggered: rapid bulk modification of files in network share with known ransomware extension. Process attempting to purge volume shadow copies.",
+    "id": "ALT-7825",
+    "timestamp": "2026-10-05T06:25:17.924399Z",
+    "status": "APPROVED",
+    "triage_result": {
+      "alert_id": "ALT-7825",
+      "incident_summary": "Detected Ransomware incident targeting host 'srv-file-archive01.prod.internal' from source IP 10.4.18.99. EDR alert triggered: rapid bulk modification of files in network share with known ransomware extension. Process attempting to purge volume shadow copies.",
+      "assessed_severity": "CRITICAL",
+      "confidence": {
+        "level": "LOW",
+        "score": 0.37,
+        "rationale": "Low confidence: Weak SOP similarity. Manual analyst verification strongly recommended."
+      },
+      "recommended_actions": [
+        {
+          "step": 1,
+          "phase": "Containment",
+          "action": "Immediately isolate host 'srv-file-archive01.prod.internal' via EDR network containment. Do NOT power off or reboot.",
+          "sop_reference": "SOP-SEC-02 \u00a72.1"
+        },
+        {
+          "step": 2,
+          "phase": "Containment",
+          "action": "Sever SMB/RPC interconnects (Ports 445/139/135) to protect centralized file repositories.",
+          "sop_reference": "SOP-SEC-02 \u00a72.2"
+        },
+        {
+          "step": 3,
+          "phase": "Eradication",
+          "action": "Capture volatile RAM dump from 'srv-file-archive01.prod.internal' for cryptographic key recovery; extract and terminate ransomware PID.",
+          "sop_reference": "SOP-SEC-02 \u00a73.1 & \u00a73.3"
+        },
+        {
+          "step": 4,
+          "phase": "Recovery",
+          "action": "Re-image infected system from validated baseline image and restore unencrypted files from immutable air-gapped backup.",
+          "sop_reference": "SOP-SEC-02 \u00a74.0"
+        }
+      ],
+      "sop_citations": [
+        {
+          "sop_id": "SOP-SEC-02",
+          "sop_title": "Ransomware & Destructive Malware Containment Procedure",
+          "section": "2.0 Urgent Containment Protocol",
+          "excerpt": "- Step 2.1: Immediately isolate host via EDR network containment. Do NOT power down or reboot the machine to preserve volatile RAM memory for forensic acquisition.\n- Step 2.2: Sever SMB/RPC interconnects at core switches between affected subnet and central file servers (port 445...",
+          "similarity_score": 0.192
+        },
+        {
+          "sop_id": "SOP-SEC-02",
+          "sop_title": "Ransomware & Destructive Malware Containment Procedure",
+          "section": "3.0 Eradication & Decryption Analysis",
+          "excerpt": "- Step 3.1: Capture RAM dump with WinPmem / LiME for cryptographic key extraction before malware process termination.\n- Step 3.2: Identify ransomware binary hash and check against NoMoreRansom and MITRE ATT&CK databases.\n- Step 3.3: Terminate malicious parent and child processes;...",
+          "similarity_score": 0.159
+        },
+        {
+          "sop_id": "SOP-SEC-02",
+          "sop_title": "Ransomware & Destructive Malware Containment Procedure",
+          "section": "1.0 Immediate Triage & Scoping",
+          "excerpt": "- Identify initial patient-zero workstation or server from SIEM alerts (high-volume file renames, .locked extensions, shadow copy deletions via vssadmin).\n- Determine propagation vectors: SMB (Port 445 / EternalBlue), RDP (Port 3389), PsExec, or compromised service accounts.\n- As...",
+          "similarity_score": 0.155
+        }
+      ],
+      "analyst_guidance": "Grounding verified against 3 SOP sections. The assistant strictly recommends following SOP-SEC-02. Analyst verification required before committing containment actions to network perimeter."
+    }
+  },
+  {
+    "title": "High-Frequency SSH Authentication Failures",
+    "threat_type": "brute_force",
+    "severity": "MEDIUM",
+    "source_ip": "203.0.113.195",
+    "target_host": "bastion-gw-ext.cloud.internal",
+    "target_user": "root",
+    "indicators": [
+      "Failed attempts: 247 in 60s",
+      "Port: 22 (SSH)",
+      "Usernames: root, admin, ubuntu, deploy"
+    ],
+    "raw_log": "Oct 05 11:42:00 bastion-gw sshd[8814]: Failed password for invalid user admin from 203.0.113.195 port 54122 ssh2 [repeated 247 times in 60s]",
+    "description": "Perimeter authentication firewall logged rapid-fire dictionary attack against SSH bastion port 22 from an untrusted public external IP.",
+    "id": "ALT-4425",
+    "timestamp": "2026-10-05T06:25:17.925334Z",
+    "status": "APPROVED",
+    "triage_result": {
+      "alert_id": "ALT-4425",
+      "incident_summary": "Detected Brute Force incident targeting host 'bastion-gw-ext.cloud.internal' from source IP 203.0.113.195. Perimeter authentication firewall logged rapid-fire dictionary attack against SSH bastion port 22 from an untrusted public external IP.",
+      "assessed_severity": "MEDIUM",
+      "confidence": {
+        "level": "MEDIUM",
+        "score": 0.48,
+        "rationale": "Medium confidence: General procedural match found (SOP-SEC-04), analyst review advised."
+      },
+      "recommended_actions": [
+        {
+          "step": 1,
+          "phase": "Containment",
+          "action": "Deploy firewall drop rule and Fail2ban block on attacking IP 203.0.113.195.",
+          "sop_reference": "SOP-SEC-04 \u00a72.1"
+        },
+        {
+          "step": 2,
+          "phase": "Containment",
+          "action": "Temporarily lock account 'root' to prevent credential spray exhaustion.",
+          "sop_reference": "SOP-SEC-04 \u00a72.2"
+        },
+        {
+          "step": 3,
+          "phase": "Eradication",
+          "action": "Verify no successful logins occurred from 203.0.113.195 on 'bastion-gw-ext.cloud.internal' in authentication logs.",
+          "sop_reference": "SOP-SEC-04 \u00a73.3"
+        },
+        {
+          "step": 4,
+          "phase": "Recovery",
+          "action": "Mandate SSH key / certificate authentication and migrate administrative portal behind VPN/ZTNA.",
+          "sop_reference": "SOP-SEC-04 \u00a73.1 & \u00a73.2"
+        }
+      ],
+      "sop_citations": [
+        {
+          "sop_id": "SOP-SEC-04",
+          "sop_title": "Brute-Force & Credential Stuffing Mitigation Procedure",
+          "section": "1.0 Triage & Attack Pattern Analysis",
+          "excerpt": "- Identify attack vector: SSH (port 22), RDP (port 3389), HTTP/REST auth endpoints, VPN gateways.\n- Review failure thresholds: >10 failed authentication attempts within 60 seconds against single or multiple accounts.\n- Distinguish between distributed credential stuffing (botnet/T...",
+          "similarity_score": 0.319
+        },
+        {
+          "sop_id": "SOP-SEC-01",
+          "sop_title": "Phishing & Social Engineering Incident Response Procedure",
+          "section": "2.0 Containment Protocol",
+          "excerpt": "- Step 2.1: Submit sender domain and source IP to corporate perimeter firewall and mail gateway blocklists (block SMTP/TLS inbound).\n- Step 2.2: Purge the malicious email from all recipient inboxes using M365 Security & Compliance / Google Workspace Admin quarantine API.\n- Step 2...",
+          "similarity_score": 0.127
+        },
+        {
+          "sop_id": "SOP-SEC-04",
+          "sop_title": "Brute-Force & Credential Stuffing Mitigation Procedure",
+          "section": "2.0 Rapid Perimeter Containment",
+          "excerpt": "- Step 2.1: Trigger automated or manual IP rate-limiting and temporary IP ban (Fail2ban / WAF IP drop rule) for offending CIDR / IP.\n- Step 2.2: Invalidate compromised or locked user accounts temporarily to stop password spraying exhaustion.\n- Step 2.3: Enforce CAPTCHA / Proof-of...",
+          "similarity_score": 0.122
+        }
+      ],
+      "analyst_guidance": "Grounding verified against 3 SOP sections. The assistant strictly recommends following SOP-SEC-04. Analyst verification required before committing containment actions to network perimeter."
+    }
+  },
+  {
+    "title": "Privilege Escalation via Sudoers Token Impersonation",
+    "threat_type": "unauthorized_access",
+    "severity": "HIGH",
+    "source_ip": "10.2.14.50",
+    "target_host": "core-db-replica01.internal",
+    "target_user": "guest_app_user",
+    "indicators": [
+      "Auditd: /etc/sudoers write event",
+      "New UID: 0 (root)",
+      "Binary: /tmp/pwn_priv"
+    ],
+    "raw_log": "Oct 05 11:44:33 core-db-replica01 auditd[1022]: type=EXECVE msg=audit(1728128673.111:401): argc=3 a0=\"sudo\" a1=\"-u\" a2=\"root\" a3=\"/tmp/pwn_priv\"",
+    "description": "Low-privilege application account successfully escalated execution privileges to root by exploiting an unauthorized sudo privilege transition.",
+    "id": "ALT-2980",
+    "timestamp": "2026-10-05T06:25:17.925334Z",
+    "status": "APPROVED",
+    "triage_result": {
+      "alert_id": "ALT-2980",
+      "incident_summary": "Detected Unauthorized Access incident targeting host 'core-db-replica01.internal' from source IP 10.2.14.50. Low-privilege application account successfully escalated execution privileges to root by exploiting an unauthorized sudo privilege transition.",
+      "assessed_severity": "HIGH",
+      "confidence": {
+        "level": "LOW",
+        "score": 0.41,
+        "rationale": "Low confidence: Weak SOP similarity. Manual analyst verification strongly recommended."
+      },
+      "recommended_actions": [
+        {
+          "step": 1,
+          "phase": "Containment",
+          "action": "Disable compromised user account 'guest_app_user' and revoke all active Kerberos/OAuth session tokens.",
+          "sop_reference": "SOP-SEC-03 \u00a72.1 & \u00a72.2"
+        },
+        {
+          "step": 2,
+          "phase": "Containment",
+          "action": "Restrict network ingress to host 'core-db-replica01.internal' to authorized bastion IP addresses only.",
+          "sop_reference": "SOP-SEC-03 \u00a72.3"
+        },
+        {
+          "step": 3,
+          "phase": "Eradication",
+          "action": "Audit bash_history / Sysmon 4688 logs for injected backdoors, SUID binaries, or persistence keys.",
+          "sop_reference": "SOP-SEC-03 \u00a73.1 & \u00a73.2"
+        },
+        {
+          "step": 4,
+          "phase": "Recovery",
+          "action": "Rotate credentials with hardware security key (FIDO2) and file forensic audit log.",
+          "sop_reference": "SOP-SEC-03 \u00a74.0"
+        }
+      ],
+      "sop_citations": [
+        {
+          "sop_id": "SOP-SEC-03",
+          "sop_title": "Unauthorized Access & Privilege Escalation Response Procedure",
+          "section": "1.0 Incident Identification",
+          "excerpt": "- Detect abnormal privilege transitions: additions to 'Domain Admins', 'Enterprise Admins', sudoers modifications, or unexpected token impersonation (SeDebugPrivilege / SeImpersonatePrivilege).\n- Detect impossible travel or anomalous location authentications on privileged account...",
+          "similarity_score": 0.276
+        },
+        {
+          "sop_id": "SOP-SEC-03",
+          "sop_title": "Unauthorized Access & Privilege Escalation Response Procedure",
+          "section": "3.0 Forensics & Eradication",
+          "excerpt": "- Step 3.1: Audit all commands executed during the unauthorized session via bash_history, auditd, or Windows Event Log 4688 / Sysmon Event ID 1.\n- Step 3.2: Check for planted backdoors: authorized_keys modifications, SUID binary creations, hidden local administrative accounts, we...",
+          "similarity_score": 0.254
+        },
+        {
+          "sop_id": "SOP-SEC-03",
+          "sop_title": "Unauthorized Access & Privilege Escalation Response Procedure",
+          "section": "4.0 Recovery & Compliance",
+          "excerpt": "- Re-issue cryptographically strong credentials with mandatory hardware-bound security keys (FIDO2 WebAuthn).\n- File forensic audit log report within 24 hours in compliance with regulatory notification mandates....",
+          "similarity_score": 0.104
+        }
+      ],
+      "analyst_guidance": "Grounding verified against 3 SOP sections. The assistant strictly recommends following SOP-SEC-03. Analyst verification required before committing containment actions to network perimeter."
+    }
+  },
+  {
+    "title": "Credential Harvester Targeting Finance Group",
+    "threat_type": "phishing",
+    "severity": "HIGH",
+    "source_ip": "185.220.101.45",
+    "target_host": "ws-fin-09.corp.internal",
+    "target_user": "cfo_assistant@enterprise.com",
+    "indicators": [
+      "hxxps://sso-secure-portal.update-payroll-login.net",
+      "mail-from: urgent-payroll@acc0unt-update.net",
+      "SHA256: 4b227777d4da1fc910b80989f64e10e7b767d40228383a15"
+    ],
+    "raw_log": "Oct 05 11:32:01 mailgateway filter[4921]: SPF PASS, DKIM FAIL, link extraction flagged high entropy domain target ws-fin-09",
+    "description": "User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "id": "ALT-3053",
+    "timestamp": "2026-10-05T06:45:25.604896Z",
+    "status": "APPROVED",
+    "triage_result": {
+      "alert_id": "ALT-3053",
+      "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+      "assessed_severity": "HIGH",
+      "confidence": {
+        "level": "LOW",
+        "score": 0.42,
+        "rationale": "Low confidence: Weak SOP similarity. Manual analyst verification strongly recommended."
+      },
+      "recommended_actions": [
+        {
+          "step": 1,
+          "phase": "Containment",
+          "action": "Blacklist source IP 185.220.101.45 and block sender domain on perimeter mail gateway.",
+          "sop_reference": "SOP-SEC-01 \u00a72.1"
+        },
+        {
+          "step": 2,
+          "phase": "Containment",
+          "action": "Purge malicious message and revoke active IdP session tokens for targeted user 'cfo_assistant@enterprise.com'.",
+          "sop_reference": "SOP-SEC-01 \u00a72.2 & \u00a72.3"
+        },
+        {
+          "step": 3,
+          "phase": "Eradication",
+          "action": "Null-route malicious indicator domains in corporate DNS sinkhole and verify zero endpoint malware executions.",
+          "sop_reference": "SOP-SEC-01 \u00a73.1"
+        },
+        {
+          "step": 4,
+          "phase": "Recovery",
+          "action": "Enforce password reset and MFA re-enrollment for affected identity.",
+          "sop_reference": "SOP-SEC-01 \u00a74.0"
+        }
+      ],
+      "sop_citations": [
+        {
+          "sop_id": "SOP-SEC-01",
+          "sop_title": "Phishing & Social Engineering Incident Response Procedure",
+          "section": "1.0 Initial Identification & Triage",
+          "excerpt": "- Extract full RFC 822 internet headers, recipient list, sending MTA IP, SPF/DKIM/DMARC authentication results.\n- Identify all Indicators of Compromise (IoCs): malicious URLs, embedded tracking pixels, attachment hashes (SHA-256).\n- If the email contains a credential harvesting h...",
+          "similarity_score": 0.277
+        },
+        {
+          "sop_id": "SOP-SEC-04",
+          "sop_title": "Brute-Force & Credential Stuffing Mitigation Procedure",
+          "section": "4.0 Log Archival",
+          "excerpt": "- Export Netflow, firewall logs, and authentication failure logs into immutable tamper-proof audit storage with SHA-256 validation....",
+          "similarity_score": 0.127
+        },
+        {
+          "sop_id": "SOP-SEC-01",
+          "sop_title": "Phishing & Social Engineering Incident Response Procedure",
+          "section": "2.0 Containment Protocol",
+          "excerpt": "- Step 2.1: Submit sender domain and source IP to corporate perimeter firewall and mail gateway blocklists (block SMTP/TLS inbound).\n- Step 2.2: Purge the malicious email from all recipient inboxes using M365 Security & Compliance / Google Workspace Admin quarantine API.\n- Step 2...",
+          "similarity_score": 0.097
+        }
+      ],
+      "analyst_guidance": "Grounding verified against 3 SOP sections. The assistant strictly recommends following SOP-SEC-01. Analyst verification required before committing containment actions to network perimeter."
+    }
+  },
+  {
+    "title": "Credential Harvester Targeting Finance Group",
+    "threat_type": "phishing",
+    "severity": "HIGH",
+    "source_ip": "185.220.101.45",
+    "target_host": "ws-fin-09.corp.internal",
+    "target_user": "cfo_assistant@enterprise.com",
+    "indicators": [
+      "hxxps://sso-secure-portal.update-payroll-login.net",
+      "mail-from: urgent-payroll@acc0unt-update.net",
+      "SHA256: 4b227777d4da1fc910b80989f64e10e7b767d40228383a15"
+    ],
+    "raw_log": "Oct 05 11:32:01 mailgateway filter[4921]: SPF PASS, DKIM FAIL, link extraction flagged high entropy domain target ws-fin-09",
+    "description": "User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "id": "ALT-1310",
+    "timestamp": "2026-10-05T06:58:52.090003Z",
+    "status": "APPROVED",
+    "triage_result": {
+      "alert_id": "ALT-1310",
+      "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+      "assessed_severity": "HIGH",
+      "confidence": {
+        "level": "LOW",
+        "score": 0.42,
+        "rationale": "Low confidence: Weak SOP similarity. Manual analyst verification strongly recommended."
+      },
+      "recommended_actions": [
+        {
+          "step": 1,
+          "phase": "Containment",
+          "action": "Blacklist source IP 185.220.101.45 and block sender domain on perimeter mail gateway.",
+          "sop_reference": "SOP-SEC-01 \u00a72.1"
+        },
+        {
+          "step": 2,
+          "phase": "Containment",
+          "action": "Purge malicious message and revoke active IdP session tokens for targeted user 'cfo_assistant@enterprise.com'.",
+          "sop_reference": "SOP-SEC-01 \u00a72.2 & \u00a72.3"
+        },
+        {
+          "step": 3,
+          "phase": "Eradication",
+          "action": "Null-route malicious indicator domains in corporate DNS sinkhole and verify zero endpoint malware executions.",
+          "sop_reference": "SOP-SEC-01 \u00a73.1"
+        },
+        {
+          "step": 4,
+          "phase": "Recovery",
+          "action": "Enforce password reset and MFA re-enrollment for affected identity.",
+          "sop_reference": "SOP-SEC-01 \u00a74.0"
+        }
+      ],
+      "sop_citations": [
+        {
+          "sop_id": "SOP-SEC-01",
+          "sop_title": "Phishing & Social Engineering Incident Response Procedure",
+          "section": "1.0 Initial Identification & Triage",
+          "excerpt": "- Extract full RFC 822 internet headers, recipient list, sending MTA IP, SPF/DKIM/DMARC authentication results.\n- Identify all Indicators of Compromise (IoCs): malicious URLs, embedded tracking pixels, attachment hashes (SHA-256).\n- If the email contains a credential harvesting h...",
+          "similarity_score": 0.277
+        },
+        {
+          "sop_id": "SOP-SEC-04",
+          "sop_title": "Brute-Force & Credential Stuffing Mitigation Procedure",
+          "section": "4.0 Log Archival",
+          "excerpt": "- Export Netflow, firewall logs, and authentication failure logs into immutable tamper-proof audit storage with SHA-256 validation....",
+          "similarity_score": 0.127
+        },
+        {
+          "sop_id": "SOP-SEC-01",
+          "sop_title": "Phishing & Social Engineering Incident Response Procedure",
+          "section": "2.0 Containment Protocol",
+          "excerpt": "- Step 2.1: Submit sender domain and source IP to corporate perimeter firewall and mail gateway blocklists (block SMTP/TLS inbound).\n- Step 2.2: Purge the malicious email from all recipient inboxes using M365 Security & Compliance / Google Workspace Admin quarantine API.\n- Step 2...",
+          "similarity_score": 0.097
+        }
+      ],
+      "analyst_guidance": "Grounding verified against 3 SOP sections. The assistant strictly recommends following SOP-SEC-01. Analyst verification required before committing containment actions to network perimeter."
+    }
+  },
+  {
+    "title": "High-Frequency SSH Authentication Failures",
+    "threat_type": "brute_force",
+    "severity": "MEDIUM",
+    "source_ip": "203.0.113.195",
+    "target_host": "bastion-gw-ext.cloud.internal",
+    "target_user": "root",
+    "indicators": [
+      "Failed attempts: 247 in 60s",
+      "Port: 22 (SSH)",
+      "Usernames: root, admin, ubuntu, deploy"
+    ],
+    "raw_log": "Oct 05 11:42:00 bastion-gw sshd[8814]: Failed password for invalid user admin from 203.0.113.195 port 54122 ssh2 [repeated 247 times in 60s]",
+    "description": "Perimeter authentication firewall logged rapid-fire dictionary attack against SSH bastion port 22 from an untrusted public external IP.",
+    "id": "ALT-1800",
+    "timestamp": "2026-10-05T07:18:34.083558Z",
+    "status": "APPROVED",
+    "triage_result": {
+      "alert_id": "ALT-1800",
+      "incident_summary": "Detected Brute Force incident targeting host 'bastion-gw-ext.cloud.internal' from source IP 203.0.113.195. Perimeter authentication firewall logged rapid-fire dictionary attack against SSH bastion port 22 from an untrusted public external IP.",
+      "assessed_severity": "MEDIUM",
+      "confidence": {
+        "level": "MEDIUM",
+        "score": 0.48,
+        "rationale": "Medium confidence: General procedural match found (SOP-SEC-04), analyst review advised."
+      },
+      "recommended_actions": [
+        {
+          "step": 1,
+          "phase": "Containment",
+          "action": "Deploy firewall drop rule and Fail2ban block on attacking IP 203.0.113.195.",
+          "sop_reference": "SOP-SEC-04 \u00a72.1"
+        },
+        {
+          "step": 2,
+          "phase": "Containment",
+          "action": "Temporarily lock account 'root' to prevent credential spray exhaustion.",
+          "sop_reference": "SOP-SEC-04 \u00a72.2"
+        },
+        {
+          "step": 3,
+          "phase": "Eradication",
+          "action": "Verify no successful logins occurred from 203.0.113.195 on 'bastion-gw-ext.cloud.internal' in authentication logs.",
+          "sop_reference": "SOP-SEC-04 \u00a73.3"
+        },
+        {
+          "step": 4,
+          "phase": "Recovery",
+          "action": "Mandate SSH key / certificate authentication and migrate administrative portal behind VPN/ZTNA.",
+          "sop_reference": "SOP-SEC-04 \u00a73.1 & \u00a73.2"
+        }
+      ],
+      "sop_citations": [
+        {
+          "sop_id": "SOP-SEC-04",
+          "sop_title": "Brute-Force & Credential Stuffing Mitigation Procedure",
+          "section": "1.0 Triage & Attack Pattern Analysis",
+          "excerpt": "- Identify attack vector: SSH (port 22), RDP (port 3389), HTTP/REST auth endpoints, VPN gateways.\n- Review failure thresholds: >10 failed authentication attempts within 60 seconds against single or multiple accounts.\n- Distinguish between distributed credential stuffing (botnet/T...",
+          "similarity_score": 0.319
+        },
+        {
+          "sop_id": "SOP-SEC-01",
+          "sop_title": "Phishing & Social Engineering Incident Response Procedure",
+          "section": "2.0 Containment Protocol",
+          "excerpt": "- Step 2.1: Submit sender domain and source IP to corporate perimeter firewall and mail gateway blocklists (block SMTP/TLS inbound).\n- Step 2.2: Purge the malicious email from all recipient inboxes using M365 Security & Compliance / Google Workspace Admin quarantine API.\n- Step 2...",
+          "similarity_score": 0.127
+        },
+        {
+          "sop_id": "SOP-SEC-04",
+          "sop_title": "Brute-Force & Credential Stuffing Mitigation Procedure",
+          "section": "2.0 Rapid Perimeter Containment",
+          "excerpt": "- Step 2.1: Trigger automated or manual IP rate-limiting and temporary IP ban (Fail2ban / WAF IP drop rule) for offending CIDR / IP.\n- Step 2.2: Invalidate compromised or locked user accounts temporarily to stop password spraying exhaustion.\n- Step 2.3: Enforce CAPTCHA / Proof-of...",
+          "similarity_score": 0.122
+        }
+      ],
+      "analyst_guidance": "Grounding verified against 3 SOP sections. The assistant strictly recommends following SOP-SEC-04. Analyst verification required before committing containment actions to network perimeter."
+    }
+  }
+]

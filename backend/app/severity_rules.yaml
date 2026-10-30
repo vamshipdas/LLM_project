@@ -1,0 +1,184 @@
+# CyberLLM Severity Classification Rules
+# Configurable mapping and pattern overrides for non-LLM deterministic severity classification
+
+base_levels:
+  debug:
+    severity: "low"
+    score: 10
+  verbose:
+    severity: "low"
+    score: 10
+  trace:
+    severity: "low"
+    score: 10
+  info:
+    severity: "low"
+    score: 20
+  information:
+    severity: "low"
+    score: 20
+  notice:
+    severity: "low"
+    score: 25
+  warning:
+    severity: "medium"
+    score: 50
+  warn:
+    severity: "medium"
+    score: 50
+  error:
+    severity: "high"
+    score: 75
+  err:
+    severity: "high"
+    score: 75
+  critical:
+    severity: "critical"
+    score: 95
+  fatal:
+    severity: "critical"
+    score: 95
+  alert:
+    severity: "critical"
+    score: 95
+  emergency:
+    severity: "critical"
+    score: 95
+
+rules:
+  # Defense Evasion: Log Cleared
+  - id: "SEV-1070"
+    name: "Audit / Event Log Cleared"
+    severity: "critical"
+    score: 95
+    event_ids: ["1102", "104"]
+    keywords:
+      - "audit log was cleared"
+      - "log was cleared"
+      - "eventlog cleared"
+      - "wevtutil cl"
+      - "clear-eventlog"
+    reason: "Deliberate security or system event log clearing detected (anti-forensics)"
+
+  # Real-Time Antivirus Protection Disabled
+  - id: "SEV-AV-DISABLED"
+    name: "Antivirus Real-Time Protection Disabled"
+    severity: "critical"
+    score: 95
+    event_ids: ["5001"]
+    keywords:
+      - "real-time protection was disabled"
+      - "antivirus protection disabled"
+      - "defender real-time protection disabled"
+    reason: "Antivirus real-time protection was explicitly turned off"
+
+  # Malware / Defender Detection
+  - id: "SEV-1204"
+    name: "Malware Detection"
+    severity: "high"
+    score: 85
+    event_ids: ["1116", "1117", "1006"]
+    keywords:
+      - "malware detected"
+      - "trojan"
+      - "ransomware"
+      - "virus detected"
+      - "threat detected"
+      - "quarantined"
+    reason: "Antivirus or EDR detected malicious software on endpoint"
+
+  # Persistence: Service Installation & Scheduled Tasks
+  - id: "SEV-1543"
+    name: "Service Installed or Task Created"
+    severity: "high"
+    score: 80
+    event_ids: ["7045", "4698"]
+    keywords:
+      - "a service was installed in the system"
+      - "service installed"
+      - "a scheduled task was created"
+      - "scheduled task created"
+    reason: "New system service or scheduled task registered (potential persistence mechanism)"
+
+  # Privilege Escalation: Account Created / Added to Admin
+  - id: "SEV-1098"
+    name: "Account Created or Privileged Group Modification"
+    severity: "high"
+    score: 80
+    event_ids: ["4720", "4732", "4728"]
+    keywords:
+      - "a member was added to a security-enabled local group"
+      - "added to administrators"
+      - "user account was created"
+      - "usermod -ag sudo"
+    reason: "Account created or elevated to privileged administrative group"
+
+  # Suspicious PowerShell Execution
+  - id: "SEV-1059"
+    name: "Suspicious PowerShell Execution"
+    severity: "high"
+    score: 85
+    event_ids: ["4104"]
+    keywords:
+      - "-enc"
+      - "-encodedcommand"
+      - "downloadstring"
+      - "invoke-expression"
+      - "iex("
+      - "bypass -noninteractive"
+      - "windowstyle hidden"
+    reason: "Evasive PowerShell script block execution or download cradle observed"
+
+  # Firewall / Audit Policy Disabled or Modified
+  - id: "SEV-POLICY-CHANGE"
+    name: "Firewall Disabled or Audit Policy Modified"
+    severity: "high"
+    score: 75
+    event_ids: ["4719", "2003", "2004"]
+    keywords:
+      - "firewall disabled"
+      - "windows firewall rule changed"
+      - "system audit policy was changed"
+    reason: "Security boundary alteration: firewall or system audit policy was modified"
+
+  # Failed Authentication Base
+  - id: "SEV-1110-SINGLE"
+    name: "Failed Authentication"
+    severity: "medium"
+    score: 55
+    event_ids: ["4625", "18456"]
+    keywords:
+      - "failed password"
+      - "authentication failure"
+      - "failed login"
+      - "invalid credentials"
+      - "logon failure"
+      - "invalid user"
+    reason: "Failed authentication attempt"
+
+  # Reconnaissance / Port Probes
+  - id: "SEV-1046"
+    name: "Network Reconnaissance / Connection Refused"
+    severity: "medium"
+    score: 50
+    keywords:
+      - "connection refused"
+      - "port scan"
+      - "syn flood"
+      - "nmap scan"
+    reason: "Repeated connection refused or port scan probe detected"
+
+  # Routine Noise / Benign Operations
+  - id: "SEV-ROUTINE"
+    name: "Routine Normal Activity"
+    severity: "low"
+    score: 15
+    event_ids: ["7036"]
+    keywords:
+      - "entered the running state"
+      - "entered the stopped state"
+      - "dhcp-client"
+      - "time service"
+      - "time provider"
+      - "rlz ping"
+    reason: "Routine operating system background task or service state change"

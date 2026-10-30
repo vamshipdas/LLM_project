@@ -1,0 +1,20 @@
+STANDARD OPERATING PROCEDURE: UNAUTHORIZED ACCESS & PRIVILEGE ESCALATION
+Document ID: SOP-SEC-03 | Classification: Restricted | Version: 2.0
+
+1.0 Incident Identification
+- Detect abnormal privilege transitions: additions to 'Domain Admins', 'Enterprise Admins', sudoers modifications, or unexpected token impersonation (SeDebugPrivilege / SeImpersonatePrivilege).
+- Detect impossible travel or anomalous location authentications on privileged accounts.
+
+2.0 Containment Actions
+- Step 2.1: Immediately disable the compromised identity account in Identity Provider (Active Directory / IAM).
+- Step 2.2: Terminate all active Kerberos TGT tickets, OAuth refresh tokens, and interactive terminal/SSH sessions associated with the identity.
+- Step 2.3: Restrict inbound access to target server: enforce strict jump-box / bastion host IP allowlisting.
+
+3.0 Forensics & Eradication
+- Step 3.1: Audit all commands executed during the unauthorized session via bash_history, auditd, or Windows Event Log 4688 / Sysmon Event ID 1.
+- Step 3.2: Check for planted backdoors: authorized_keys modifications, SUID binary creations, hidden local administrative accounts, web shells.
+- Step 3.3: Roll the Kerberos krbtgt account password twice if Domain Controller compromise is suspected.
+
+4.0 Recovery & Compliance
+- Re-issue cryptographically strong credentials with mandatory hardware-bound security keys (FIDO2 WebAuthn).
+- File forensic audit log report within 24 hours in compliance with regulatory notification mandates.

@@ -1,0 +1,31 @@
+# --- Python / environments ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env
+*.log
+
+# --- Runtime artifacts (regenerated on every boot) ---
+backend/data/soc.db
+backend/data/faiss.index*
+backend/data/faiss.index.meta.json
+backend/data/huggingface/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+*claudeplans*
+
+# --- Cache ---
+graphify-out/cache/
+
+
+
+# --- Frontend ---
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+

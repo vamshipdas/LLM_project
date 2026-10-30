@@ -1,0 +1,374 @@
+# Built-in offline SOC Knowledge Base for Windows Event IDs and Linux Log Patterns
+# Used for instant offline explanations and supplementing LLM responses.
+
+events:
+  "4625":
+    name: "Account Failed to Log On"
+    category: "Authentication"
+    what_happened: "An account attempted to log on to the computer but authentication failed [invalid password, bad username, or expired credentials]."
+    why_it_matters: "Repeated failed logons usually indicate a brute-force attack [guessing passwords], credential stuffing, or a misconfigured scheduled task with an expired password."
+    severity: "medium"
+    is_normal: "Occasionally normal when a user mistypes their password (low confidence of threat). Highly suspicious when occurring multiple times in a short window or from an unknown IP address (likely malicious, high confidence)."
+    mitre_technique: "T1110 - Brute Force"
+    suggested_action: "Verify if the source IP and target user account are authorized. Check if multiple failures occurred within 60 seconds."
+
+  "4624":
+    name: "An Account Was Successfully Logged On"
+    category: "Authentication"
+    what_happened: "A user or system service successfully authenticated and started a logon session."
+    why_it_matters: "While logon is normal, unauthorized logons during odd hours or following repeated failed logons indicate potential account compromise."
+    severity: "low"
+    is_normal: "Normal for regular business activity (likely benign, high confidence). Check LogonType (e.g., Type 2 interactive, Type 3 network, Type 10 Remote Desktop) for context."
+    mitre_technique: "T1078 - Valid Accounts"
+    suggested_action: "Verify logon hours, originating IP address, and whether the account has administrative privileges."
+
+  "4672":
+    name: "Special Privileges Assigned to New Logon"
+    category: "Privilege Escalation"
+    what_happened: "An account logged on with administrative or sensitive superuser rights [SeDebugPrivilege, SeTakeOwnershipPrivilege]."
+    why_it_matters: "Administrative rights allow full control of the operating system. Attackers seek these privileges to disable security controls."
+    severity: "medium"
+    is_normal: "Normal when an administrator logs in or a system service starts. Malicious if observed for standard non-admin users."
+    mitre_technique: "T1078.002 - Domain Accounts"
+    suggested_action: "Confirm that the user account legitimately belongs to the system administrators group."
+
+  "4720":
+    name: "A User Account Was Created"
+    category: "Persistence"
+    what_happened: "A new user account was added to the local system or active directory."
+    why_it_matters: "Attackers frequently create backdoor user accounts to maintain access even if their initial exploit is discovered."
+    severity: "high"
+    is_normal: "Normal only during authorized IT onboarding or system provisioning (moderate false positive rate)."
+    mitre_technique: "T1136 - Create Account"
+    suggested_action: "Cross-reference the account creation request with IT change management tickets."
+
+  "4726":
+    name: "A User Account Was Deleted"
+    category: "Account Management"
+    what_happened: "A user account was removed from the local computer or domain."
+    why_it_matters: "Could indicate IT offboarding or an attacker covering their tracks by removing temporary malicious accounts."
+    severity: "medium"
+    is_normal: "Expected during user deprovisioning. Malicious if deleted unexpectedly right after an alert."
+    mitre_technique: "T1531 - Account Access Removal"
+    suggested_action: "Verify with HR or IT service desk if the deletion was scheduled."
+
+  "4728":
+    name: "A Member Was Added to a Security-Enabled Global Group"
+    category: "Privilege Escalation"
+    what_happened: "A user was added to a privileged security group."
+    why_it_matters: "Grants elevated permissions across the network; high risk if added to Domain Admins or Enterprise Admins."
+    severity: "high"
+    is_normal: "Rare; should only occur via approved privileged access management requests."
+    mitre_technique: "T1098 - Account Manipulation"
+    suggested_action: "Audit who added the user and revoke privileges immediately if unauthorized."
+
+  "4732":
+    name: "A Member Was Added to a Security-Enabled Local Group"
+    category: "Privilege Escalation"
+    what_happened: "A user was added to the local Administrators or Remote Desktop Users group."
+    why_it_matters: "Grants complete administrative control over this local host."
+    severity: "high"
+    is_normal: "Rare on standard workstations. Highly suspicious if executed from an unknown script or process."
+    mitre_technique: "T1098 - Account Manipulation"
+    suggested_action: "Immediately review the target account and identity of the actor who performed the change."
+
+  "4738":
+    name: "A User Account Was Modified"
+    category: "Account Management"
+    what_happened: "Properties of a user account (such as password expiration or permissions) were changed."
+    why_it_matters: "Adversaries modify existing dormant accounts or reset passwords to evade detection."
+    severity: "medium"
+    is_normal: "Common for IT administration and self-service password resets."
+    mitre_technique: "T1098 - Account Manipulation"
+    suggested_action: "Inspect the specific changed attribute in the event details."
+
+  "4776":
+    name: "The Computer Attempted to Validate Credentials for an Account"
+    category: "Authentication"
+    what_happened: "A domain controller or local computer attempted to validate NTLM credentials for an account."
+    why_it_matters: "Package status code (e.g. 0xC000006A) reveals wrong password or locked account."
+    severity: "low"
+    is_normal: "Frequent in Windows networks utilizing legacy NTLM protocols."
+    mitre_technique: "T1110 - Brute Force"
+    suggested_action: "Check the status code; 0x0 is success, non-zero indicates failure."
+
+  "1102":
+    name: "The Audit Log Was Cleared"
+    category: "Defense Evasion"
+    what_happened: "The Windows Security event log was intentionally wiped clean."
+    why_it_matters: "Security logs are the primary source of incident telemetry. Clearing them is almost universally a sign of an adversary attempting to hide their activity [anti-forensics]."
+    severity: "critical"
+    is_normal: "Extremely abnormal in production environments (likely malicious, critical confidence)."
+    mitre_technique: "T1070.001 - Clear Windows Event Logs"
+    suggested_action: "Immediately isolate the endpoint, identify the logged-on user session, and pull secondary forensic artifacts."
+
+  "104":
+    name: "The System Log File Was Cleared"
+    category: "Defense Evasion"
+    what_happened: "The Windows System event log was cleared."
+    why_it_matters: "Indicates an attempt to remove traces of driver installations, service creation, or crash artifacts."
+    severity: "critical"
+    is_normal: "Very abnormal outside automated maintenance scripts."
+    mitre_technique: "T1070.001 - Clear Windows Event Logs"
+    suggested_action: "Investigate who ran wevtutil or PowerShell Clear-EventLog."
+
+  "7045":
+    name: "A New Service Was Installed"
+    category: "Persistence"
+    what_happened: "A new Windows service was installed to run automatically in the background."
+    why_it_matters: "Services run with SYSTEM privileges and survive reboots; commonly used by ransomware and backdoors."
+    severity: "high"
+    is_normal: "Normal when installing legitimate enterprise software; suspicious if pointing to Temp, Downloads, or AppData."
+    mitre_technique: "T1543.003 - Windows Service"
+    suggested_action: "Check ImagePath binary path, digital signature, and service account."
+
+  "4698":
+    name: "A Scheduled Task Was Created"
+    category: "Persistence"
+    what_happened: "A new scheduled task was registered to execute a command at a scheduled time or on trigger."
+    why_it_matters: "Adversaries use scheduled tasks to maintain stealthy persistence and execute malicious payloads."
+    severity: "high"
+    is_normal: "Created occasionally by legitimate software updates (Google, Adobe). Malicious if invoking cmd.exe or powershell.exe."
+    mitre_technique: "T1053.005 - Scheduled Task"
+    suggested_action: "Inspect the task XML definition and actions to see what binary or script is launched."
+
+  "4699":
+    name: "A Scheduled Task Was Deleted"
+    category: "Defense Evasion"
+    what_happened: "An existing scheduled task was deleted."
+    why_it_matters: "Adversaries delete tasks after execution to prevent forensic analysis."
+    severity: "medium"
+    is_normal: "Normal during software uninstallation."
+    mitre_technique: "T1070 - Indicator Removal"
+    suggested_action: "Check which task was deleted and whether it ran suspicious commands."
+
+  "4702":
+    name: "A Scheduled Task Was Updated"
+    category: "Persistence"
+    what_happened: "An existing scheduled task's configuration or target action was modified."
+    why_it_matters: "Adversaries hijack existing legitimate scheduled tasks to execute malware stealthily."
+    severity: "medium"
+    is_normal: "Occurs during software patching."
+    mitre_technique: "T1053.005 - Scheduled Task"
+    suggested_action: "Compare the previous and new command line parameters."
+
+  "4104":
+    name: "PowerShell Script Block Logging"
+    category: "Execution"
+    what_happened: "PowerShell recorded the complete code of a script or command executed on the host."
+    why_it_matters: "Attackers use PowerShell to download payloads, execute in-memory code, and bypass disk inspection."
+    severity: "high"
+    is_normal: "Normal for administrative automation; high risk if containing -enc, DownloadString, IEX, or bypass."
+    mitre_technique: "T1059.001 - PowerShell"
+    suggested_action: "De-obfuscate base64 strings and analyze network URLs inside the script block."
+
+  "4103":
+    name: "PowerShell Module Logging"
+    category: "Execution"
+    what_happened: "PowerShell pipeline execution details and module invocations were recorded."
+    why_it_matters: "Captures cmdlets and parameters executed during command runs."
+    severity: "medium"
+    is_normal: "Routine system administration."
+    mitre_technique: "T1059.001 - PowerShell"
+    suggested_action: "Review executed cmdlets for reconnaissance tools (Get-Process, Net-User, etc.)."
+
+  "1116":
+    name: "Microsoft Defender Detected Malware"
+    category: "Malware"
+    what_happened: "Microsoft Defender Antivirus detected a malicious file, trojan, or unwanted software."
+    why_it_matters: "Confirmed detection of malicious activity on the endpoint."
+    severity: "high"
+    is_normal: "Likely malicious (high confidence). Review whether the malware was blocked or executed."
+    mitre_technique: "T1204 - User Execution"
+    suggested_action: "Check the threat name, file location, and whether Defender automatically remediated it."
+
+  "1117":
+    name: "Microsoft Defender Took Action to Protect Against Malware"
+    category: "Malware Remediation"
+    what_happened: "Microsoft Defender took corrective action (quarantined, deleted, or cleaned) on a detected threat."
+    why_it_matters: "Indicates remediation occurred, but initial infection vectors must still be investigated."
+    severity: "high"
+    is_normal: "Positive defensive action taken. Investigation is required to ensure no secondary persistence exists."
+    mitre_technique: "T1204 - User Execution"
+    suggested_action: "Verify file quarantine status and inspect patient-zero host telemetry."
+
+  "5001":
+    name: "Microsoft Defender Real-Time Protection Disabled"
+    category: "Defense Evasion"
+    what_happened: "Microsoft Defender Antivirus real-time scanning was turned off."
+    why_it_matters: "Disabling antivirus leaves the endpoint completely defenseless against ransomware and payloads."
+    severity: "critical"
+    is_normal: "Extremely dangerous and rarely legitimate outside isolated developer troubleshooting."
+    mitre_technique: "T1562.001 - Disable or Modify Tools"
+    suggested_action: "Re-enable Defender real-time protection immediately and investigate the user or process that disabled it."
+
+  "5007":
+    name: "Microsoft Defender Configuration Changed"
+    category: "Defense Evasion"
+    what_happened: "Defender configuration, exclusions, or policy settings were modified."
+    why_it_matters: "Malware often adds directory exclusions (e.g. C:\\Users\\Public) so Defender ignores payloads."
+    severity: "high"
+    is_normal: "Expected during controlled administrative changes; malicious if adding folder exclusions."
+    mitre_technique: "T1562.001 - Disable or Modify Tools"
+    suggested_action: "Review added antivirus exclusion paths."
+
+  "4688":
+    name: "A New Process Has Been Created"
+    category: "Execution"
+    what_happened: "A new process (program) was launched by a user or parent process."
+    why_it_matters: "Process telemetry with command lines is essential for detecting script interpreters and living-off-the-land binaries."
+    severity: "low"
+    is_normal: "Happens thousands of times a day. Suspicious if parent process is Word/Excel launching cmd or powershell."
+    mitre_technique: "T1059 - Command and Scripting Interpreter"
+    suggested_action: "Inspect the Creator Process Name and Process Command Line."
+
+  "4689":
+    name: "A Process Has Exited"
+    category: "Execution"
+    what_happened: "A running process terminated."
+    why_it_matters: "Useful to determine how long a suspicious program ran before stopping."
+    severity: "low"
+    is_normal: "Routine operating system activity."
+    mitre_technique: "T1059 - Command Execution"
+    suggested_action: "Compare exit codes to check for abnormal crashes."
+
+  "5140":
+    name: "A Network Share Object Was Accessed"
+    category: "Lateral Movement"
+    what_happened: "A client connected over the network and accessed a shared folder."
+    why_it_matters: "Lateral movement often involves connecting to ADMIN$ or C$ admin shares."
+    severity: "low"
+    is_normal: "Routine for mapped drives; suspicious if targeting hidden administrative shares."
+    mitre_technique: "T1021.002 - SMB/Windows Admin Shares"
+    suggested_action: "Check ShareName and SourceAddress."
+
+  "5145":
+    name: "Network Share Detailed Access Check"
+    category: "Lateral Movement"
+    what_happened: "Detailed permissions were evaluated on files inside a network share."
+    why_it_matters: "High volume of 5145 events on multiple files indicates network-wide file enumeration or ransomware encryption."
+    severity: "medium"
+    is_normal: "Common on busy file servers."
+    mitre_technique: "T1021.002 - SMB/Windows Admin Shares"
+    suggested_action: "Review access masks and file extensions targeted."
+
+  "4719":
+    name: "System Audit Policy Was Changed"
+    category: "Defense Evasion"
+    what_happened: "The logging and auditing policies of the system were altered."
+    why_it_matters: "Adversaries disable auditing so their actions are not recorded in the event log."
+    severity: "high"
+    is_normal: "Only normal during security baseline updates."
+    mitre_technique: "T1562.002 - Disable Windows Event Logging"
+    suggested_action: "Verify if auditing was turned off for logon or privilege use categories."
+
+  "4798":
+    name: "A User's Local Group Membership Was Enumerated"
+    category: "Discovery"
+    what_happened: "A process queried the local security groups that a user belongs to."
+    why_it_matters: "Attackers perform local reconnaissance to find admin accounts."
+    severity: "low"
+    is_normal: "Common for administrative utilities."
+    mitre_technique: "T1087.001 - Local Accounts"
+    suggested_action: "Check the calling process name."
+
+  "4799":
+    name: "A Security-Enabled Local Group Membership Was Enumerated"
+    category: "Discovery"
+    what_happened: "A process queried the members of a local group (such as Administrators)."
+    why_it_matters: "Reconnaissance technique to identify target accounts for privilege escalation."
+    severity: "low"
+    is_normal: "Routine system and software queries."
+    mitre_technique: "T1069.001 - Local Groups"
+    suggested_action: "Check whether executed by legitimate enterprise agents."
+
+  "6005":
+    name: "The Event Log Service Was Started"
+    category: "System"
+    what_happened: "The Windows Event Log service initialized (typically system startup/reboot)."
+    why_it_matters: "Marks the boot timestamp of the machine."
+    severity: "low"
+    is_normal: "Expected on every system boot."
+    mitre_technique: "Routine Operation"
+    suggested_action: "Verify if reboot was scheduled."
+
+  "6006":
+    name: "The Event Log Service Was Stopped"
+    category: "System"
+    what_happened: "The Windows Event Log service was stopped (orderly shutdown)."
+    why_it_matters: "Marks an intentional system shutdown."
+    severity: "low"
+    is_normal: "Expected on system power-down or restart."
+    mitre_technique: "Routine Operation"
+    suggested_action: "Confirm with scheduled maintenance."
+
+  "10016":
+    name: "DCOM Permission Configuration Warning"
+    category: "System Noise"
+    what_happened: "An application requested DCOM activation permissions that were not granted in security settings."
+    why_it_matters: "A very common benign Windows warning that rarely represents a security breach."
+    severity: "low"
+    is_normal: "Extremely common Windows system noise (likely benign, 99% false positive rate)."
+    mitre_technique: "Routine System Noise"
+    suggested_action: "No immediate security action needed unless correlated with exploitation tools."
+
+  # Linux / Syslog Patterns
+  "failed_password":
+    name: "SSH Failed Password Attempt"
+    category: "Authentication"
+    what_happened: "An SSH authentication attempt failed due to an incorrect password."
+    why_it_matters: "Common in automated SSH dictionary brute-force attacks across internet-facing servers."
+    severity: "medium"
+    is_normal: "Occasional mistyped password is normal; 5+ attempts indicates an active brute-force attempt."
+    mitre_technique: "T1110.001 - Password Guessing"
+    suggested_action: "Check remote source IP and consider fail2ban or iptables blocking."
+
+  "accepted_password":
+    name: "SSH Successful Authentication"
+    category: "Authentication"
+    what_happened: "An SSH login was successfully established."
+    why_it_matters: "Confirms remote terminal access into the server."
+    severity: "low"
+    is_normal: "Normal when performed by authorized sysadmins during normal shift hours."
+    mitre_technique: "T1021.004 - SSH"
+    suggested_action: "Verify the connecting IP address and user account."
+
+  "sudo":
+    name: "Sudo Elevated Command Execution"
+    category: "Privilege Escalation"
+    what_happened: "A user executed a privileged command using the sudo utility."
+    why_it_matters: "Grants root access; unauthorized sudo usage could compromise the entire server."
+    severity: "medium"
+    is_normal: "Normal for server administration. Check executed command arguments."
+    mitre_technique: "T1548.003 - Sudo and Sudo Caching"
+    suggested_action: "Confirm that the user had approval to run the specified command."
+
+  "auth_failure":
+    name: "PAM Authentication Failure"
+    category: "Authentication"
+    what_happened: "Pluggable Authentication Module (PAM) rejected a login or authorization request."
+    why_it_matters: "Indicates bad credentials, expired accounts, or authentication attacks."
+    severity: "medium"
+    is_normal: "Normal for occasional mistypes; suspicious when clustered."
+    mitre_technique: "T1110 - Brute Force"
+    suggested_action: "Identify the service requesting PAM authentication."
+
+  "invalid_user":
+    name: "SSH Invalid User Login Attempt"
+    category: "Reconnaissance / Brute Force"
+    what_happened: "An SSH connection attempted to log into a user account that does not exist on the server (e.g., admin, test, oracle)."
+    why_it_matters: "Sign of automated internet scanners trying default credential dictionaries."
+    severity: "medium"
+    is_normal: "Common on public-facing servers; almost certainly automated botnet reconnaissance."
+    mitre_technique: "T1110 - Brute Force"
+    suggested_action: "Block the source IP on the edge firewall."
+
+  "ufw_block":
+    name: "Firewall Dropped Packet"
+    category: "Network Defense"
+    what_happened: "Uncomplicated Firewall (UFW) blocked an unauthorized incoming or outgoing connection attempt."
+    why_it_matters: "Shows firewall is successfully blocking traffic, but repeated hits from one IP indicate port scanning."
+    severity: "low"
+    is_normal: "Normal background Internet noise."
+    mitre_technique: "T1046 - Network Service Discovery"
+    suggested_action: "Monitor for distributed scanning patterns."

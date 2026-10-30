@@ -1,0 +1,20 @@
+STANDARD OPERATING PROCEDURE: BRUTE FORCE & CREDENTIAL STUFFING ATTACKS
+Document ID: SOP-SEC-04 | Classification: Operational | Version: 1.9
+
+1.0 Triage & Attack Pattern Analysis
+- Identify attack vector: SSH (port 22), RDP (port 3389), HTTP/REST auth endpoints, VPN gateways.
+- Review failure thresholds: >10 failed authentication attempts within 60 seconds against single or multiple accounts.
+- Distinguish between distributed credential stuffing (botnet/Tor exit nodes) vs. targeted single-source brute force.
+
+2.0 Rapid Perimeter Containment
+- Step 2.1: Trigger automated or manual IP rate-limiting and temporary IP ban (Fail2ban / WAF IP drop rule) for offending CIDR / IP.
+- Step 2.2: Invalidate compromised or locked user accounts temporarily to stop password spraying exhaustion.
+- Step 2.3: Enforce CAPTCHA / Proof-of-Work challenge on exposed authentication endpoints.
+
+3.0 Eradication & Hardening
+- Step 3.1: Disable password authentication on external management ports; mandate certificate/SSH-key based authentication only.
+- Step 3.2: Move exposed administrative management ports behind zero-trust network access (ZTNA) or corporate VPN.
+- Step 3.3: Inspect successful logins immediately preceding or following the spike to ensure zero breached sessions.
+
+4.0 Log Archival
+- Export Netflow, firewall logs, and authentication failure logs into immutable tamper-proof audit storage with SHA-256 validation.

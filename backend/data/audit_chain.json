@@ -1,0 +1,236 @@
+[
+  {
+    "audit_id": "AUD-00001",
+    "sequence_number": 1,
+    "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "current_hash": "fc0f85526ab4b90f890f9d2a6688d4d3b723b1fd7d209e24ba30506cf78239d8",
+    "timestamp": "2026-10-05T06:45:52.795462Z",
+    "alert_id": "ALT-3053",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "sop_references": [
+      "SOP-SEC-01 (1.0 Initial Identification & Triage)",
+      "SOP-SEC-04 (4.0 Log Archival)",
+      "SOP-SEC-01 (2.0 Containment Protocol)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00002",
+    "sequence_number": 2,
+    "prev_hash": "fc0f85526ab4b90f890f9d2a6688d4d3b723b1fd7d209e24ba30506cf78239d8",
+    "current_hash": "8278b8f8d6224162683c19e94e61d8448f2c712cc3d40b2d839fc6e39f218dc1",
+    "timestamp": "2026-10-05T06:46:03.389173Z",
+    "alert_id": "ALT-3053",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "sop_references": [
+      "SOP-SEC-01 (1.0 Initial Identification & Triage)",
+      "SOP-SEC-04 (4.0 Log Archival)",
+      "SOP-SEC-01 (2.0 Containment Protocol)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00003",
+    "sequence_number": 3,
+    "prev_hash": "8278b8f8d6224162683c19e94e61d8448f2c712cc3d40b2d839fc6e39f218dc1",
+    "current_hash": "2b5c964ad708d85e6fff8f7b299d77e86d7c53dd8b0b93261f62a46436f16e7b",
+    "timestamp": "2026-10-05T06:49:43.630711Z",
+    "alert_id": "ALT-2980",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Unauthorized Access incident targeting host 'core-db-replica01.internal' from source IP 10.2.14.50. Low-privilege application account successfully escalated execution privileges to root by exploiting an unauthorized sudo privilege transition.",
+    "sop_references": [
+      "SOP-SEC-03 (1.0 Incident Identification)",
+      "SOP-SEC-03 (3.0 Forensics & Eradication)",
+      "SOP-SEC-03 (4.0 Recovery & Compliance)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00004",
+    "sequence_number": 4,
+    "prev_hash": "2b5c964ad708d85e6fff8f7b299d77e86d7c53dd8b0b93261f62a46436f16e7b",
+    "current_hash": "b541a0cf33d305ae945763c304aa2813d1b73b10f7435d4d2ac190dc57fbfc00",
+    "timestamp": "2026-10-05T06:49:48.290205Z",
+    "alert_id": "ALT-4425",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Brute Force incident targeting host 'bastion-gw-ext.cloud.internal' from source IP 203.0.113.195. Perimeter authentication firewall logged rapid-fire dictionary attack against SSH bastion port 22 from an untrusted public external IP.",
+    "sop_references": [
+      "SOP-SEC-04 (1.0 Triage & Attack Pattern Analysis)",
+      "SOP-SEC-01 (2.0 Containment Protocol)",
+      "SOP-SEC-04 (2.0 Rapid Perimeter Containment)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00005",
+    "sequence_number": 5,
+    "prev_hash": "b541a0cf33d305ae945763c304aa2813d1b73b10f7435d4d2ac190dc57fbfc00",
+    "current_hash": "e8610b0d56bab32d5ac1bd0dbf2ac2c609546507b8c93a65d1617d0dbe765f24",
+    "timestamp": "2026-10-05T06:49:51.634243Z",
+    "alert_id": "ALT-7825",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Ransomware incident targeting host 'srv-file-archive01.prod.internal' from source IP 10.4.18.99. EDR alert triggered: rapid bulk modification of files in network share with known ransomware extension. Process attempting to purge volume shadow copies.",
+    "sop_references": [
+      "SOP-SEC-02 (2.0 Urgent Containment Protocol)",
+      "SOP-SEC-02 (3.0 Eradication & Decryption Analysis)",
+      "SOP-SEC-02 (1.0 Immediate Triage & Scoping)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00006",
+    "sequence_number": 6,
+    "prev_hash": "e8610b0d56bab32d5ac1bd0dbf2ac2c609546507b8c93a65d1617d0dbe765f24",
+    "current_hash": "eee88b9f9a0276fae8f3c55f68f029dfd8675ebf38634c9f635dbb06cd755a44",
+    "timestamp": "2026-10-05T06:49:55.692330Z",
+    "alert_id": "ALT-2717",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "sop_references": [
+      "SOP-SEC-01 (1.0 Initial Identification & Triage)",
+      "SOP-SEC-04 (4.0 Log Archival)",
+      "SOP-SEC-01 (2.0 Containment Protocol)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00007",
+    "sequence_number": 7,
+    "prev_hash": "eee88b9f9a0276fae8f3c55f68f029dfd8675ebf38634c9f635dbb06cd755a44",
+    "current_hash": "db164a82d1461d2b8022ba1d20a4cf88aee549cd41512a2020452b17aec32477",
+    "timestamp": "2026-10-05T07:10:53.792691Z",
+    "alert_id": "ALT-1310",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "sop_references": [
+      "SOP-SEC-01 (1.0 Initial Identification & Triage)",
+      "SOP-SEC-04 (4.0 Log Archival)",
+      "SOP-SEC-01 (2.0 Containment Protocol)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00008",
+    "sequence_number": 8,
+    "prev_hash": "db164a82d1461d2b8022ba1d20a4cf88aee549cd41512a2020452b17aec32477",
+    "current_hash": "fd60f01e3ed8e9db4ab13f25040255fe29c70dc6633236acf0d4843d3a168ed0",
+    "timestamp": "2026-10-05T07:10:57.023775Z",
+    "alert_id": "ALT-3053",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "sop_references": [
+      "SOP-SEC-01 (1.0 Initial Identification & Triage)",
+      "SOP-SEC-04 (4.0 Log Archival)",
+      "SOP-SEC-01 (2.0 Containment Protocol)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00009",
+    "sequence_number": 9,
+    "prev_hash": "fd60f01e3ed8e9db4ab13f25040255fe29c70dc6633236acf0d4843d3a168ed0",
+    "current_hash": "161d44e15fd06a9e15d944ac02f6b3a9b296adebce905c02b5003e892790ce03",
+    "timestamp": "2026-10-05T07:10:58.667620Z",
+    "alert_id": "ALT-2980",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Unauthorized Access incident targeting host 'core-db-replica01.internal' from source IP 10.2.14.50. Low-privilege application account successfully escalated execution privileges to root by exploiting an unauthorized sudo privilege transition.",
+    "sop_references": [
+      "SOP-SEC-03 (1.0 Incident Identification)",
+      "SOP-SEC-03 (3.0 Forensics & Eradication)",
+      "SOP-SEC-03 (4.0 Recovery & Compliance)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00010",
+    "sequence_number": 10,
+    "prev_hash": "161d44e15fd06a9e15d944ac02f6b3a9b296adebce905c02b5003e892790ce03",
+    "current_hash": "5c35189d153f05d7d89a4123c155e11613ce2dd2ca4e5540401d21afe15367e4",
+    "timestamp": "2026-10-05T07:11:00.766133Z",
+    "alert_id": "ALT-2717",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "sop_references": [
+      "SOP-SEC-01 (1.0 Initial Identification & Triage)",
+      "SOP-SEC-04 (4.0 Log Archival)",
+      "SOP-SEC-01 (2.0 Containment Protocol)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00011",
+    "sequence_number": 11,
+    "prev_hash": "5c35189d153f05d7d89a4123c155e11613ce2dd2ca4e5540401d21afe15367e4",
+    "current_hash": "7eecc8eef52fe0e5848988a619937e44f777be43fd2914fe8e4ab79b283c7297",
+    "timestamp": "2026-10-05T07:11:01.467209Z",
+    "alert_id": "ALT-2717",
+    "analyst_id": "analyst_mercer",
+    "decision": "REJECT",
+    "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "sop_references": [
+      "SOP-SEC-01 (1.0 Initial Identification & Triage)",
+      "SOP-SEC-04 (4.0 Log Archival)",
+      "SOP-SEC-01 (2.0 Containment Protocol)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00012",
+    "sequence_number": 12,
+    "prev_hash": "7eecc8eef52fe0e5848988a619937e44f777be43fd2914fe8e4ab79b283c7297",
+    "current_hash": "1e381a0fc1cec45119920bab225aa82a536590cc7de804125291a6bfea8d2019",
+    "timestamp": "2026-10-05T07:11:02.781884Z",
+    "alert_id": "ALT-2717",
+    "analyst_id": "analyst_mercer",
+    "decision": "REJECT",
+    "incident_summary": "Detected Phishing incident targeting host 'ws-fin-09.corp.internal' from source IP 185.220.101.45. User reported an urgent email claiming payroll banking details need re-verification. Proxy logs indicate an outbound POST to a known credential harvesting domain.",
+    "sop_references": [
+      "SOP-SEC-01 (1.0 Initial Identification & Triage)",
+      "SOP-SEC-04 (4.0 Log Archival)",
+      "SOP-SEC-01 (2.0 Containment Protocol)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  },
+  {
+    "audit_id": "AUD-00013",
+    "sequence_number": 13,
+    "prev_hash": "1e381a0fc1cec45119920bab225aa82a536590cc7de804125291a6bfea8d2019",
+    "current_hash": "3c2d6e5518971068cae8ef2c7c484f85792b25ffe1c1d889a20cb90e33c421c6",
+    "timestamp": "2026-10-05T07:18:41.973643Z",
+    "alert_id": "ALT-1800",
+    "analyst_id": "analyst_mercer",
+    "decision": "APPROVE",
+    "incident_summary": "Detected Brute Force incident targeting host 'bastion-gw-ext.cloud.internal' from source IP 203.0.113.195. Perimeter authentication firewall logged rapid-fire dictionary attack against SSH bastion port 22 from an untrusted public external IP.",
+    "sop_references": [
+      "SOP-SEC-04 (1.0 Triage & Attack Pattern Analysis)",
+      "SOP-SEC-01 (2.0 Containment Protocol)",
+      "SOP-SEC-04 (2.0 Rapid Perimeter Containment)"
+    ],
+    "notes": "",
+    "is_tamper_verified": true
+  }
+]
